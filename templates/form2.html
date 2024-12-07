@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+    
+{% block title %}
+    Form 2
+{% endblock title %}
+
+{% block body %}
+    
+    <script>
+        function addField(containerId, fieldType) {
+            const container = document.getElementById(containerId);
+            const fieldDiv = document.createElement('div');
+            fieldDiv.classList.add("mb-3")
+            fieldDiv.innerHTML = `  
+                <input  class="form-control mb-3" type="text" name="${fieldType}[]" placeholder="" required>
+                <button class="btn btn-primary"  type="button" onclick="removeField(this)">Remove</button>
+            `;
+            container.appendChild(fieldDiv);
+        }
+
+        function removeField(button) {
+            button.parentElement.remove();
+        }
+        </script>
+
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5">
+            <h1>
+                Form 2 For Blog {{blog.blogName}}
+            </h1>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="blog_id" value="{{blog.id}}">
+                <div class="mb-3">
+
+                    <label class="form-label fs-4" for="common_promo">Common Promo Message:</label>
+                    <textarea class="form-control" id="common_promo" name="common_promo" rows="4"  required>{{blog.common_promo}}</textarea>
+                </div>
+                <div class="mb-3">
+
+                    <label class="form-label fs-4" for="common_prompt">Common GPT Prompt:</label>
+                    <textarea id="common_prompt" class="form-control " name="common_prompt" rows="4"  required>{{blog.common_prompt}}</textarea>
+                </div>
+                {% for schedule in blog.posting_schedule_set.all  %}
+                <div class="mb-3">
+
+                    <h2>Day: {{ schedule.posting_day }}, Time: {{ schedule.posting_time }}</h2>
+                </div>
+                
+                <div class="mb-3">
+
+                    <label class="form-label fs-4">Specific Promo:</label>
+                    <textarea class="form-control" name="specific_promo_{{schedule.id}}" rows="2" cols="50" required>{{schedule.promo_msg}}</textarea>
+                </div>
+                
+                <div class="mb-3">
+
+                    <label class="form-label fs-4">Specific GPT Prompt:</label>
+                    <textarea class="form-control" name="specific_prompt_{{schedule.id}}" rows="2" cols="50" required>{{schedule.gpt_prompt}}</textarea>
+                </div>
+                <div class="mb-3">
+
+                    <label class="form-label fs-4" for="language_{{ schedule.id }}">Select Language: </label>
+                    <input class="form-control" type="text" id="language_{{ schedule.id }}" name="language_{{ schedule.id }}" value="{{schedule.language}}">
+                </div>
+                
+                <div class="mb-3">
+
+                    <h3>Categories</h3>
+                    <div id="categories-container-{{ schedule.id }}">
+                        {% if schedule.category_set.all.count == 0 %}
+                        <div class="mb-3">
+
+                            <input class="form-control mb-3" type="text" name="categories_{{schedule.id}}[]" placeholder="Enter category" value="{{category.category}}" required>
+                            <button type="button" class="btn btn-primary" onclick="addField('categories-container-{{ schedule.id }}', 'categories_{{ schedule.id }}')">Add More Categories</button>
+                        </div>
+                        {% endif %}
+
+                        {% for category in schedule.category_set.all%}
+                        {% if forloop.counter == 1 %}
+                        <div class="mb-3">
+
+                            <input class="form-control mb-3" type="text" name="categories_{{schedule.id}}[]" placeholder="Enter category" value="{{category.category}}" required>
+                            <button type="button" class="btn btn-primary" onclick="addField('categories-container-{{ schedule.id }}', 'categories_{{ schedule.id }}')">Add More Categories</button>
+                        </div>
+                        {% else %}
+
+                        <div class="mb-3">
+                            <input  class="form-control mb-3" value="{{category.category}}" type="text" name="${fieldType}[]" placeholder="" required>
+                            <button class="btn btn-primary"  type="button" onclick="removeField(this)">Remove</button>
+                            
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+                <div class="mb-3">
+
+                    <h3>Keywords</h3>
+                    <div id="keywords-container-{{ schedule.id }}" >
+                        {% if schedule.keyword_set.all.count == 0 %}
+                        <div class="mb-3">
+                
+                            <input class="form-control mb-3" type="text" name="keywords_{{schedule.id}}[]" placeholder="Enter keywords" value="{{keyword.keyword}}" required>
+                            <button type="button" class="btn btn-primary" onclick="addField('keywords-container-{{ schedule.id }}', 'keywords_{{ schedule.id }}')">Add More Keywords</button>
+                        </div>
+                        {% endif %}
+                
+                        {% for keyword in schedule.keyword_set.all%}
+                        {% if forloop.counter == 1 %}
+                        <div class="mb-3">
+                
+                            <input class="form-control mb-3" type="text" name="keywords_{{schedule.id}}[]" placeholder="Enter keyword" value="{{keyword.keyword}}" required>
+                            <button type="button" class="btn btn-primary" onclick="addField('keywords-container-{{ schedule.id }}', 'keywords_{{ schedule.id }}')">Add More Keywords</button>
+                        </div>
+                        {% else %}
+                
+                        <div class="mb-3">
+                            <input  class="form-control mb-3" value="{{keyword.keyword}}" type="text" name="${fieldType}[]" placeholder="" required>
+                            <button class="btn btn-primary"  type="button" onclick="removeField(this)">Remove</button>
+                            
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+        
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock body %}
+
+
+

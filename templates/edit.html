@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Edit Blogs
+{% endblock title %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Previously Generated Blogs</h2><br><br>
+
+    <div class="list-group">
+        {% for blog in blogs %}
+
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ blog.id }} - {{ blog.blogName }}</span>
+            <div>
+                <a class="ms-3" href="{% url 'form2' blog.id %}">
+                    <span class="badge bg-secondary rounded-pill">Edit</span>
+                </a>
+                <a class="ms-3" href="{% url 'view_form5' blog.id %}">
+                    <span class="badge bg-secondary rounded-pill">Form 5</span>
+                </a>
+            </div>
+        </li>
+        
+        {% endfor %}
+    </div>
+</div>
+
+<div class="mb-4" style="position: absolute; top: 20px; right: 20px;">
+    <a href="{% url 'index' %}" class="btn btn-primary">
+        Home
+    </a>
+</div>
+
+
+
+
+    
+
+{% endblock body %}

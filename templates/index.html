@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %}
+    Home
+{% endblock title %}
+
+{% block body %}
+
+<div class="container my-5 py-5">
+    <div class="col-12">
+
+    <form method="post" class="">
+        {% csrf_token %}
+        
+        <div class="mb-4" style="position: absolute; top: 20px; right: 20px;">
+            <a href="{% url 'previous_blogs' %}" class="mb-4">
+            <button type="button" class="btn btn-primary">
+                    Edit Previous Blog
+                </button>
+            </a>
+        </div>
+        
+        
+
+        <div class="mb-3">
+            <label for="blogName" class="form-label fs-4">Blog Name</label>
+            <input type="text" class="form-control" id="blogName" name="blogName" aria-describedby="blogName">
+        </div>
+        <div id="posting-container" class="mb-3">
+            <div class="row posting-entry">
+                <div class="col-6">
+
+                    <label class="form-label fs-4" for="posting_day">Select Posting Day:</label>
+                    <select class="form-control" name="posting_day[]" required>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+                <div class="col-6">
+
+                    <label for="posting_time" class="form-label fs-4">Select Posting Time:</label>
+                    <input type="time" class="form-control" name="posting_time[]" required>
+                    <button type="button" class="btn btn-primary my-2" onclick="addDayAndTimeFields()">Add More</button>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="social-media-container" class="mb-3">
+            <div class="mb-3" >
+
+                <label class="form-label fs-4">Social Media:</label>
+                <input type="text" class="form-control" name="social_media[]">
+                <button type="button" class="btn btn-primary mt-3" onclick="addField('social-media-container', 'social_media')">Add More</button><br>
+            </div>
+        </div><br>
+
+        <div id="urls-container" class="mb-3">
+            <div class="mb-3">
+
+                <label class="form-label fs-4">URLs:</label>
+                <input class="form-control" type="text" name="urls[]">
+                <button type="button" class="btn btn-primary mt-3" onclick="addField('urls-container', 'urls')">Add More</button><br>
+            </div>
+        </div><br>
+
+        <div id="extra-fields-container" class="mb-3">
+            <h3>Dynamic Extra Field</h3>
+            <button class="btn btn-primary" type="button" onclick="addDynamicField()">Add Extra Field</button>
+            <br><br>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+
+</div>
+
+
+
+
+    <script>
+        
+        function addDayAndTimeFields() {
+            const container = document.getElementById('posting-container');
+            const fieldDiv = document.createElement('div');
+            fieldDiv.classList.add('posting-entry');
+            fieldDiv.classList.add('row');
+
+            fieldDiv.innerHTML = `
+                <div class="col-6">
+
+                    <select class="form-control" name="posting_day[]" required>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+                <div class="col-6">
+
+                    <input type="time" class="form-control" name="posting_time[]" required>
+                </div>
+                    <button type="button" class="btn btn-primary my-2 w-25" onclick="removeDayAndTimeFields(this)">Remove</button>
+            `;
+
+            container.appendChild(fieldDiv);
+        }
+
+        function removeDayAndTimeFields(button) {
+            button.parentElement.remove();
+        }
+        function addField(containerId, fieldType) {
+            const container = document.getElementById(containerId);
+            const fieldDiv = document.createElement('div');
+            fieldDiv.classList.add('mb-3')
+            fieldDiv.innerHTML = `
+                <input type="text" class="form-control" name="${fieldType}[]" placeholder="Enter ${fieldType}" required>
+                <button type="button" class="btn btn-primary my-3" onclick="removeField(this)">Remove</button>
+            `;
+            container.appendChild(fieldDiv);
+        }
+        function removeField(button) {
+            button.parentElement.remove();
+        }
+
+        function addDynamicField() {
+            const container = document.getElementById('extra-fields-container');
+            const fieldDiv = document.createElement('div');
+            fieldDiv.innerHTML = `
+                <label>Field Name:</label>
+                <input type="text" name="extra_field[]" placeholder="Enter Field Name" required>
+                <label>Field Value:</label>
+                <input type="text" name="extra_value[]" placeholder="Enter Field Value" required>
+                <button type="button" onclick="removeDynamicField(this)">Remove</button>
+            `;
+            container.appendChild(fieldDiv);
+        }
+
+        function removeDynamicField(button) {
+            button.parentElement.remove();
+        }
+    </script>  
+{% endblock body %}

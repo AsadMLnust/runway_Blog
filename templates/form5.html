@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+    
+{% block title %}
+    Form 5
+    
+{% endblock title %}
+
+{% block body %}
+    
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5">
+            <div class="d-flex w-100 justify-content-between">
+
+                <h1>
+                    Form 5 For Blog: {{blog.blogName}}
+                </h1>
+                <a href="{% url 'index' %}">
+                    <button class="btn btn-primary">Home</button>
+                </a>
+            </div>
+            <form >
+                {% csrf_token %}
+                <input type="hidden" name="blog_id" value="{{blog.id}}">
+                {% for schedule in blog.posting_schedule_set.all  %}
+                {% if posting_time_passed %}
+
+                <div class="mb-3">
+
+                    <h2>Day: {{ schedule.posting_day }}, Time: {{ schedule.posting_time }}</h2>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label fs-4" for="contentType_{{schedule.id}}">Content TYPE:</label>
+                  <p>{{schedule.content_type}}</p>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fs-4">Generated Idea:</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{schedule.story_idea}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fs-4">Generated Story line:</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{schedule.storyline}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fs-4">Generated Hook Scene:</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{schedule.hook_scene}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fs-4">Generated last scene:</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{schedule.last_scene}}</textarea>
+            </div>
+            
+            {% for sce in schedule.scene_set.all  %}
+
+                
+                
+
+            <div class="mb-3">
+                <label class="form-label fs-4">Generated Scene {{forloop.counter}}</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{sce.scene}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fs-4">Generated Script {{forloop.counter}}</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{sce.script}}</textarea>
+            </div>
+              
+            <div class="mb-3">
+                <label class="form-label fs-4">Generated SSML Script {{forloop.counter}}</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{sce.ssml}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fs-4">Generated Animation Instruction {{forloop.counter}}</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{sce.animation_instruction}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fs-4">Generated Dalle Prompt {{forloop.counter}}</label>
+                <textarea  class="form-control" disabled  rows="10" cols="50" required>{{sce.dalle_prompt}}</textarea>
+            </div>
+            {% endfor %}
+
+            {% else %}
+            <div class="my-5">
+                <h3>
+                    Posting Time is {{schedule.posting_day}} {{schedule.posting_time}} kindly wait
+                </h3>
+            </div>
+                
+            {% endif %}
+                {% endfor %}
+                
+              </form>
+        </div>
+    </div>
+</div>
+<script>
+
+document.querySelectorAll('.generation-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+        const dataId = event.target.getAttribute('data-id');
+        const url = `{% url 'generateStoryIdea'  %}`;
+        console.log(url);
+        console.log(`dataId is ${dataId}`);
+        const textArea = document.getElementById(`gen_idea_${dataId}`)
+        textArea.value=  "Generating your story idea"
+        // Get the content type from the relevant select dropdown based on the dataId
+        const contentType = document.getElementById(`contentType_${dataId}`).value;
+        const csrfToken = document.querySelector("input[name=csrfmiddlewaretoken]").value;
+        console.log(contentType);
+        
+        // Prepare data to be sent in the POST request
+        const formData = new FormData();
+        formData.append('contentType', contentType);
+        formData.append('posting_id', dataId);  // Posting ID
+        formData.append('csrfmiddlewaretoken',csrfToken)
+        // Send POST request using fetch
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json',  // Expect JSON response
+                // If you are sending form-encoded data, no need to manually set Content-Type, as FormData handles it
+            }
+        })
+        .then(response => response.json())  // Parse JSON response
+        .then(data => {
+          textArea.value= data.generated_idea
+
+            console.log('Response JSON:', data.generated_idea);  // Log the JSON response
+        })
+        .catch(error => {
+            console.error('Error:', error);  // Log any errors
+        });
+    });
+});
+</script>
+
+
+{% endblock body %}
+
+
+

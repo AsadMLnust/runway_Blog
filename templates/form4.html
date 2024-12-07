@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+    
+{% block title %}
+    Form 4
+    
+{% endblock title %}
+
+{% block body %}
+    
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5">
+            <h1>
+                Form 4 For Blog {{blog.blogName}}
+            </h1>
+            <form action="{% url 'finalizeIdeas' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="blog_id" value="{{blog.id}}">
+                {% for schedule in blog.posting_schedule_set.all  %}
+                <div class="mb-3">
+
+                    <h2>Day: {{ schedule.posting_day }}, Time: {{ schedule.posting_time }}</h2>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label fs-4" for="contentType_{{schedule.id}}">Content TYPE:</label>
+                  <select class="form-select" id="contentType_{{schedule.id}}" required>
+                      <option value="video">Video</option>
+                      <option value="reel">Reel</option>
+                  </select>
+              </div>
+              
+                
+                <div class="mb-3">
+
+                    <label class="form-label fs-4">Generated Idea:</label>
+                    <textarea id="gen_idea_{{schedule.id}}" name="gen_idea_{{schedule.id}}" class="form-control"  rows="10" cols="50" required></textarea>
+                </div>
+
+              
+                <button class="btn btn-primary generation-btn" data-id="{{schedule.id}}" type="button">Generate Idea</button>
+                {% endfor %}
+                <div class="my-3">
+
+                  <button class="btn btn-primary " type="submit">Finalize All Ideas</button>
+                </div>
+              </form>
+        </div>
+    </div>
+</div>
+<script>
+
+document.querySelectorAll('.generation-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+        const dataId = event.target.getAttribute('data-id');
+        const url = `{% url 'generateStoryIdea'  %}`;
+        console.log(url);
+        console.log(`dataId is ${dataId}`);
+        const textArea = document.getElementById(`gen_idea_${dataId}`)
+        textArea.value=  "Generating your story idea"
+        // Get the content type from the relevant select dropdown based on the dataId
+        const contentType = document.getElementById(`contentType_${dataId}`).value;
+        const csrfToken = document.querySelector("input[name=csrfmiddlewaretoken]").value;
+        console.log(contentType);
+        
+        // Prepare data to be sent in the POST request
+        const formData = new FormData();
+        formData.append('contentType', contentType);
+        formData.append('posting_id', dataId);  // Posting ID
+        formData.append('csrfmiddlewaretoken',csrfToken)
+        // Send POST request using fetch
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json',  // Expect JSON response
+                // If you are sending form-encoded data, no need to manually set Content-Type, as FormData handles it
+            }
+        })
+        .then(response => response.json())  // Parse JSON response
+        .then(data => {
+          textArea.value= data.generated_idea
+
+            console.log('Response JSON:', data.generated_idea);  // Log the JSON response
+        })
+        .catch(error => {
+            console.error('Error:', error);  // Log any errors
+        });
+    });
+});
+</script>
+
+
+{% endblock body %}
+
+
+

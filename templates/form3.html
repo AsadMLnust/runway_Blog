@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}
+    Technical Configuration
+{% endblock title %}
+
+{% block body %}
+
+<h1>
+  Form 3 for {{blog.blogName}}
+</h1>
+<div class="container d-flex min-vh-100 justify-content-center align-items-center">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="blog_id" value="{{ blog.id }}">
+            <div class="mb-3">
+
+                <label class="form-label">Runway API:</label>
+                <input type="text" class="form-control" id="runway_api" name="runway_api"  value="{{blog.runway_api}}">
+              </div>
+
+              <div class="mb-3">
+
+                <label class="form-label">Cloud Configuration:</label>
+                <input type="text" class="form-control" id="cloud" name="cloud" value="{{blog.cloud_config}}">
+              </div>
+
+              <div class="mb-3">
+
+                <label class="form-label">OpenAI API:</label>
+                <input type="text" class="form-control" id="openai_api" name="openai_api" value="{{blog.openai_api}}">
+              </div>
+      
+
+            <button type="submit" class="btn btn-primary">Save Configurations</button>
+    
+        </form>
+</div>
+{% endblock body %}
