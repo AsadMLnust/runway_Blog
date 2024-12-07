@@ -24,10 +24,9 @@ SECRET_KEY = 'django-insecure-=#zdzi^c%hm$)(kemjmiqn&((#x=a5c_i21g-eqevw6c^qug1!
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ALLOWED_HOSTS = ['https://runway-blog-y4nb.onrender.com','runway-blog-y4nb.onrender.com','127.0.0.1','localhost']
 
-ALLOWED_HOSTS = ['https://runway-blog-y4nb.onrender.com.onrender.com','runway-blog-y4nb.onrender.com.onrender.com','127.0.0.1','localhost']
-
-CSRF_TRUSTED_ORIGINS =['https://runway-blog-y4nb.onrender.com.onrender.com']
+CSRF_TRUSTED_ORIGINS =['https://runway-blog-y4nb.onrender.com']
 
 
 # Application definition
